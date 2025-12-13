@@ -1,7 +1,11 @@
-const { callReadOnlyFunction } = require('@stacks/transactions/dist/cl');
-const { cvToValue } = require('@stacks/transactions/dist/cl');
-const { stringAsciiCV, uintCV, principalCV } = require('@stacks/transactions/dist/cl');
-const { AnchorMode } = require('@stacks/transactions/dist/transactions');
+const {
+  fetchCallReadOnlyFunction,
+  cvToJSON,
+  stringAsciiCV,
+  uintCV,
+  principalCV,
+  AnchorMode,
+} = require('@stacks/transactions');
 const config = require('../config/stacks');
 const axios = require('axios');
 
@@ -11,7 +15,7 @@ class StacksService {
    */
   async getEvent(eventId) {
     try {
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         contractAddress: config.contractAddress,
         contractName: config.contractName,
         functionName: 'get-event',
@@ -31,7 +35,7 @@ class StacksService {
    */
   async didAttend(eventId, attendeeAddress) {
     try {
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         contractAddress: config.contractAddress,
         contractName: config.contractName,
         functionName: 'did-attend',
@@ -51,7 +55,7 @@ class StacksService {
    */
   async getAttendance(eventId, attendeeAddress) {
     try {
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         contractAddress: config.contractAddress,
         contractName: config.contractName,
         functionName: 'get-attendance',
