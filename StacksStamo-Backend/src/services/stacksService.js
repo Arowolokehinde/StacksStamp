@@ -1,13 +1,7 @@
-const {
-  callReadOnlyFunction,
-  cvToJSON,
-  stringAsciiCV,
-  uintCV,
-  principalCV,
-  makeContractCall,
-  broadcastTransaction,
-  AnchorMode,
-} = require('@stacks/transactions');
+const { callReadOnlyFunction } = require('@stacks/transactions/dist/cl');
+const { cvToValue } = require('@stacks/transactions/dist/cl');
+const { stringAsciiCV, uintCV, principalCV } = require('@stacks/transactions/dist/cl');
+const { AnchorMode } = require('@stacks/transactions/dist/transactions');
 const config = require('../config/stacks');
 const axios = require('axios');
 
