@@ -3,7 +3,7 @@ import { useWallet } from '../context/WalletContext';
 import { contractService } from '../services/contract';
 
 export default function CreateEvent({ onEventCreated }) {
-  const { isConnected, address, userSession } = useWallet();
+  const { isConnected, address } = useWallet();
   const [eventName, setEventName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -32,8 +32,8 @@ export default function CreateEvent({ onEventCreated }) {
     setLoading(true);
 
     try {
-      await contractService.createEvent(eventName, userSession);
-      setSuccess(`Event "${eventName}" creation initiated! Check your wallet for confirmation.`);
+      await contractService.createEvent(eventName);
+      setSuccess(`Event "${eventName}" creation initiated!`);
       setEventName('');
       if (onEventCreated) {
         setTimeout(() => onEventCreated(), 2000);

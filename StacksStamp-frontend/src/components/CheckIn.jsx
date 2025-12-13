@@ -4,7 +4,7 @@ import { contractService } from '../services/contract';
 import { apiService } from '../services/api';
 
 export default function CheckIn({ onCheckInComplete }) {
-  const { isConnected, address, userSession } = useWallet();
+  const { isConnected, address } = useWallet();
   const [eventId, setEventId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -54,8 +54,8 @@ export default function CheckIn({ onCheckInComplete }) {
     setLoading(true);
 
     try {
-      await contractService.checkIn(parseInt(eventId), userSession);
-      setSuccess(`Check-in to Event #${eventId} initiated! Check your wallet for confirmation.`);
+      await contractService.checkIn(parseInt(eventId));
+      setSuccess(`Check-in to Event #${eventId} initiated!`);
       setEventId('');
       if (onCheckInComplete) {
         setTimeout(() => onCheckInComplete(), 2000);
