@@ -1,0 +1,391 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #5546ff;
+  --primary-dark: #3d30cc;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --error: #dc3545;
+  --warning: #ffc107;
+  --bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --text: #212529;
+  --text-light: #6c757d;
+  --border: #dee2e6;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
+  border-bottom: 2px solid var(--border);
+}
+
+.header-content h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+
+.tagline {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+/* Wallet */
+.connect-wallet button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.wallet-connected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.address {
+  background: var(--bg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0;
+  border-bottom: 2px solid var(--border);
+}
+
+.tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-light);
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: var(--primary);
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Main Content */
+.app-main {
+  min-height: 500px;
+  padding: 30px 0;
+}
+
+/* Cards */
+.create-event-card,
+.check-in-card,
+.event-list-container,
+.my-events-container {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-event-card h2,
+.check-in-card h2,
+.event-list-container h2,
+.my-events-container h2 {
+  margin-bottom: 20px;
+  color: var(--primary);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.input:disabled {
+  background: var(--bg);
+  cursor: not-allowed;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-light);
+  font-size: 0.875rem;
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 15px 0;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.warning {
+  color: var(--warning);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+/* Event List */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.event-card {
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+}
+
+.event-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(85, 70, 255, 0.15);
+}
+
+.my-event {
+  border-color: var(--success);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+}
+
+.event-header h3 {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin: 0;
+  flex: 1;
+}
+
+.event-id {
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.event-details {
+  margin-bottom: 15px;
+}
+
+.event-details p {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.event-details strong {
+  color: var(--text);
+}
+
+/* Check-ins List */
+.check-ins-list {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border);
+}
+
+.check-ins-list h4 {
+  margin-bottom: 15px;
+  color: var(--primary);
+}
+
+.check-ins-list ul {
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.check-ins-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin: 5px 0;
+  background: var(--card-bg);
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.timestamp {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+/* Loading & Empty States */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+.no-events {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 30px 0;
+  margin-top: 60px;
+  border-top: 2px solid var(--border);
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.contract-info {
+  margin-top: 5px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .header-content h1 {
+    font-size: 2rem;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
