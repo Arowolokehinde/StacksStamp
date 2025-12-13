@@ -1,17 +1,21 @@
-import { openContractCall } from '@stacks/connect';
+import * as stacksConnect from '@stacks/connect';
 import {
   stringAsciiCV,
   uintCV,
   AnchorMode,
 } from '@stacks/transactions';
-import { CONTRACT_ADDRESS, CONTRACT_NAME, NETWORK } from '../config/stacks';
+import { StacksMainnet } from '@stacks/network';
+import { CONTRACT_ADDRESS, CONTRACT_NAME } from '../config/stacks';
+
+const { openContractCall } = stacksConnect;
+const network = new StacksMainnet();
 
 export const contractService = {
-  async createEvent(eventName, userSession) {
+  async createEvent(eventName) {
     const functionArgs = [stringAsciiCV(eventName)];
 
     const options = {
-      network: NETWORK,
+      network,
       anchorMode: AnchorMode.Any,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -19,22 +23,26 @@ export const contractService = {
       functionArgs,
       appDetails: {
         name: 'StackStamp',
-        icon: window.location.origin + '/logo.svg',
+        icon: window.location.origin + '/vite.svg',
       },
       onFinish: (data) => {
-        console.log('Transaction:', data);
+        console.log('Create event transaction:', data);
+        alert('Transaction submitted! Check your wallet for confirmation.');
         return data;
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled');
       },
     };
 
     return await openContractCall(options);
   },
 
-  async checkIn(eventId, userSession) {
+  async checkIn(eventId) {
     const functionArgs = [uintCV(eventId)];
 
     const options = {
-      network: NETWORK,
+      network,
       anchorMode: AnchorMode.Any,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -42,22 +50,26 @@ export const contractService = {
       functionArgs,
       appDetails: {
         name: 'StackStamp',
-        icon: window.location.origin + '/logo.svg',
+        icon: window.location.origin + '/vite.svg',
       },
       onFinish: (data) => {
-        console.log('Transaction:', data);
+        console.log('Check-in transaction:', data);
+        alert('Transaction submitted! Check your wallet for confirmation.');
         return data;
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled');
       },
     };
 
     return await openContractCall(options);
   },
 
-  async closeEvent(eventId, userSession) {
+  async closeEvent(eventId) {
     const functionArgs = [uintCV(eventId)];
 
     const options = {
-      network: NETWORK,
+      network,
       anchorMode: AnchorMode.Any,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -65,11 +77,15 @@ export const contractService = {
       functionArgs,
       appDetails: {
         name: 'StackStamp',
-        icon: window.location.origin + '/logo.svg',
+        icon: window.location.origin + '/vite.svg',
       },
       onFinish: (data) => {
-        console.log('Transaction:', data);
+        console.log('Close event transaction:', data);
+        alert('Transaction submitted! Check your wallet for confirmation.');
         return data;
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled');
       },
     };
 
