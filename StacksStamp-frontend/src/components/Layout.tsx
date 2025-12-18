@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Stamp, Menu, X, Moon, Sun } from 'lucide-react';
+import WalletButton from './WalletButton';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -85,9 +86,7 @@ export default function Layout() {
                   <Moon className="h-5 w-5 text-gray-700" />
                 )}
               </button>
-              <button className="btn-primary">
-                Connect Wallet
-              </button>
+              <WalletButton />
             </div>
 
             {/* Mobile menu button */}
