@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import {
   connect as connectWallet,
   disconnect as disconnectWallet,
@@ -35,6 +35,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     const checkAuth = () => {
       if (checkConnection()) {
         const data = getLocalStorage();
+        // Get the first Stacks address from the stx array
         const stxAddress = data?.addresses?.stx?.[0]?.address;
 
         if (stxAddress) {
@@ -58,7 +59,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
       }
 
       const response = await connectWallet();
-      const stxAddress = response?.addresses?.stx?.[0]?.address;
+      // addresses is a flat array - find the Stacks address (starts with SP or ST)
+      const stxAddress = response?.addresses?.find((addr: any) =>
+        addr.address?.startsWith('SP') || addr.address?.startsWith('ST')
+      )?.address;
 
       if (stxAddress) {
         setUserAddress(stxAddress);
