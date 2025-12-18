@@ -5,6 +5,12 @@ import {
   isConnected as checkConnection,
   getLocalStorage
 } from '@stacks/connect';
+import {
+  getActiveWallet,
+  savePreferredWallet,
+  clearPreferredWallet,
+  type WalletType
+} from '../utils/walletDetection';
 
 // Define all types inline to avoid module resolution issues
 interface WalletContextType {
@@ -13,7 +19,8 @@ interface WalletContextType {
   isConnecting: boolean;
   error: string | null;
   network: 'mainnet' | 'testnet';
-  connect: () => Promise<void>;
+  selectedWallet: WalletType | null;
+  connect: (walletType?: WalletType) => Promise<void>;
   disconnect: () => void;
 }
 
@@ -28,6 +35,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
   const network: 'mainnet' | 'testnet' = 'mainnet';
 
   // Check for existing session on mount
@@ -48,23 +56,28 @@ export function WalletProvider({ children }: WalletProviderProps) {
     checkAuth();
   }, []);
 
-  const connect = async (): Promise<void> => {
+  const connect = async (walletType?: WalletType): Promise<void> => {
     setIsConnecting(true);
     setError(null);
 
     try {
-      // Debug: Log all available wallet providers
-      console.log('=== WALLET DEBUG INFO ===');
-      console.log('window.StacksProvider:', window.StacksProvider);
-      console.log('window.XverseProviders:', (window as any).XverseProviders);
-      console.log('window.btc:', (window as any).btc);
-      console.log('All window properties with "wallet":',
-        Object.keys(window).filter(key => key.toLowerCase().includes('wallet') || key.toLowerCase().includes('provider'))
-      );
+      // Detect which wallet is currently active
+      const activeWallet = getActiveWallet();
 
-      // Check if wallet extension is installed
+      console.log('=== WALLET CONNECTION INFO ===');
+      console.log('Requested wallet:', walletType || 'auto');
+      console.log('Active wallet:', activeWallet);
+
+      // If user selected a specific wallet, verify it's the active one
+      if (walletType && activeWallet && walletType !== activeWallet) {
+        throw new Error(
+          `Please disable other wallet extensions and keep only ${walletType.charAt(0).toUpperCase() + walletType.slice(1)} enabled, then try again.`
+        );
+      }
+
+      // Check if any wallet extension is installed
       if (typeof window !== 'undefined' && !window.StacksProvider) {
-        throw new Error('Wallet extension not found. Please install Leather or Hiro wallet.');
+        throw new Error('No wallet extension found. Please install Leather, Xverse, or Hiro wallet.');
       }
 
       console.log('Calling connectWallet()...');
@@ -98,6 +111,14 @@ export function WalletProvider({ children }: WalletProviderProps) {
         console.log('✅ Successfully got address:', stxAddress);
         setUserAddress(stxAddress);
         setIsConnected(true);
+
+        // Save the wallet that was used
+        const connectedWallet = walletType || activeWallet;
+        if (connectedWallet) {
+          setSelectedWallet(connectedWallet);
+          savePreferredWallet(connectedWallet);
+          console.log('✅ Connected with:', connectedWallet);
+        }
       } else {
         console.error('❌ Could not extract STX address from response');
         throw new Error('Could not extract Stacks address from wallet response');
@@ -144,6 +165,8 @@ export function WalletProvider({ children }: WalletProviderProps) {
     setUserAddress(null);
     setIsConnected(false);
     setError(null);
+    setSelectedWallet(null);
+    clearPreferredWallet();
   };
 
   const value: WalletContextType = {
@@ -152,6 +175,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     isConnecting,
     error,
     network,
+    selectedWallet,
     connect,
     disconnect,
   };
