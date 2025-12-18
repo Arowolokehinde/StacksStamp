@@ -135,9 +135,9 @@ export default function Layout() {
                   {link.label}
                 </Link>
               ))}
-              <button className="w-full btn-primary mt-4">
-                Connect Wallet
-              </button>
+              <div className="mt-4">
+                <WalletButton />
+              </div>
             </div>
           </div>
         )}
