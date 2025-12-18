@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
+import {
+  connect as connectWallet,
+  disconnect as disconnectWallet,
+  isConnected as checkConnection,
+  getLocalStorage
+} from '@stacks/connect';
 
 // Define all types inline to avoid module resolution issues
 interface WalletContextType {
@@ -12,19 +17,7 @@ interface WalletContextType {
   disconnect: () => void;
 }
 
-interface UserData {
-  profile: {
-    stxAddress: {
-      mainnet: string;
-      testnet: string;
-    };
-  };
-}
-
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
-
-const appConfig = new AppConfig(['store_write', 'publish_data']);
-const userSession = new UserSession({ appConfig });
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -40,30 +33,19 @@ export function WalletProvider({ children }: WalletProviderProps) {
   // Check for existing session on mount
   useEffect(() => {
     const checkAuth = () => {
-      if (userSession.isUserSignedIn()) {
-        const userData = userSession.loadUserData() as UserData;
-        const address = userData.profile.stxAddress[network];
+      if (checkConnection()) {
+        const data = getLocalStorage();
+        const stxAddress = data?.addresses?.stx?.[0]?.address;
 
-        setUserAddress(address);
-        setIsConnected(true);
-
-        // Persist to localStorage
-        localStorage.setItem('walletAddress', address);
-        localStorage.setItem('walletConnected', 'true');
-      } else {
-        // Check localStorage for persisted connection
-        const savedAddress = localStorage.getItem('walletAddress');
-        const wasConnected = localStorage.getItem('walletConnected') === 'true';
-
-        if (savedAddress && wasConnected) {
-          setUserAddress(savedAddress);
+        if (stxAddress) {
+          setUserAddress(stxAddress);
           setIsConnected(true);
         }
       }
     };
 
     checkAuth();
-  }, [network]);
+  }, []);
 
   const connect = async (): Promise<void> => {
     setIsConnecting(true);
@@ -75,48 +57,27 @@ export function WalletProvider({ children }: WalletProviderProps) {
         throw new Error('Wallet extension not found. Please install Leather or Hiro wallet.');
       }
 
-      await showConnect({
-        appDetails: {
-          name: 'StackStamp',
-          icon: window.location.origin + '/vite.svg',
-        },
-        redirectTo: '/',
-        onFinish: () => {
-          setIsConnecting(false);
+      const response = await connectWallet();
+      const stxAddress = response?.addresses?.stx?.[0]?.address;
 
-          const userData = userSession.loadUserData() as UserData;
-          const address = userData.profile.stxAddress[network];
-
-          setUserAddress(address);
-          setIsConnected(true);
-
-          // Persist to localStorage
-          localStorage.setItem('walletAddress', address);
-          localStorage.setItem('walletConnected', 'true');
-        },
-        onCancel: () => {
-          setIsConnecting(false);
-          setError('Connection cancelled by user');
-        },
-        userSession,
-      });
+      if (stxAddress) {
+        setUserAddress(stxAddress);
+        setIsConnected(true);
+      }
     } catch (err) {
-      setIsConnecting(false);
       const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
       setError(errorMessage);
       console.error('Wallet connection error:', err);
+    } finally {
+      setIsConnecting(false);
     }
   };
 
   const disconnect = () => {
-    userSession.signUserOut();
+    disconnectWallet();
     setUserAddress(null);
     setIsConnected(false);
     setError(null);
-
-    // Clear localStorage
-    localStorage.removeItem('walletAddress');
-    localStorage.removeItem('walletConnected');
   };
 
   const value: WalletContextType = {
