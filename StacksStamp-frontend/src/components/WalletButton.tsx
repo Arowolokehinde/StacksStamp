@@ -2,10 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, ChevronDown, LogOut, LayoutDashboard, Loader2, AlertCircle } from 'lucide-react';
 import { useWallet } from '../contexts/WalletContext';
+import WalletSelectionModal from './WalletSelectionModal';
+import type { WalletType } from '../utils/walletDetection';
 
 export default function WalletButton() {
-  const { userAddress, isConnected, isConnecting, error, network, connect, disconnect } = useWallet();
+  const { userAddress, isConnected, isConnecting, error, network, selectedWallet, connect, disconnect } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -35,8 +38,17 @@ export default function WalletButton() {
     setIsDropdownOpen(false);
   };
 
+  const handleConnect = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleSelectWallet = async (walletType: WalletType) => {
+    setIsModalOpen(false);
+    await connect(walletType);
+  };
+
   const handleRetry = () => {
-    connect();
+    setIsModalOpen(true);
   };
 
   // Error State
@@ -139,12 +151,21 @@ export default function WalletButton() {
 
   // Not Connected State
   return (
-    <button
-      onClick={connect}
-      className="flex items-center gap-2 btn-primary"
-    >
-      <Wallet className="h-5 w-5" />
-      Connect Wallet
-    </button>
+    <>
+      <button
+        onClick={handleConnect}
+        className="flex items-center gap-2 btn-primary"
+      >
+        <Wallet className="h-5 w-5" />
+        Connect Wallet
+      </button>
+
+      <WalletSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectWallet={handleSelectWallet}
+        isConnecting={isConnecting}
+      />
+    </>
   );
 }
