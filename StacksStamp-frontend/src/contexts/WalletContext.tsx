@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
+import { AppConfig, UserSession, openAuthPopup } from '@stacks/connect';
 
 // Define all types inline to avoid module resolution issues
 interface WalletContextType {
