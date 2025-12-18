@@ -42,16 +42,19 @@ export default function WalletButton() {
   // Error State
   if (error) {
     return (
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-          <span className="text-sm text-red-600 dark:text-red-400">Connection failed</span>
+      <div className="flex flex-col gap-2 max-w-md">
+        <div className="flex items-start gap-2 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-1">Connection Error</p>
+            <p className="text-xs text-red-600/80 dark:text-red-400/80">{error}</p>
+          </div>
         </div>
         <button
           onClick={handleRetry}
           className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200"
         >
-          Retry
+          Try Again
         </button>
       </div>
     );
