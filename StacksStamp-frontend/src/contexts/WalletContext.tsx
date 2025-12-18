@@ -1,6 +1,25 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { WalletContextType, UserData } from '../types/wallet';
+
+// Define all types inline to avoid module resolution issues
+interface WalletContextType {
+  userAddress: string | null;
+  isConnected: boolean;
+  isConnecting: boolean;
+  error: string | null;
+  network: 'mainnet' | 'testnet';
+  connect: () => Promise<void>;
+  disconnect: () => void;
+}
+
+interface UserData {
+  profile: {
+    stxAddress: {
+      mainnet: string;
+      testnet: string;
+    };
+  };
+}
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
