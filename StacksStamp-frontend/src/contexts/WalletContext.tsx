@@ -53,25 +53,87 @@ export function WalletProvider({ children }: WalletProviderProps) {
     setError(null);
 
     try {
+      // Debug: Log all available wallet providers
+      console.log('=== WALLET DEBUG INFO ===');
+      console.log('window.StacksProvider:', window.StacksProvider);
+      console.log('window.XverseProviders:', (window as any).XverseProviders);
+      console.log('window.btc:', (window as any).btc);
+      console.log('All window properties with "wallet":',
+        Object.keys(window).filter(key => key.toLowerCase().includes('wallet') || key.toLowerCase().includes('provider'))
+      );
+
       // Check if wallet extension is installed
       if (typeof window !== 'undefined' && !window.StacksProvider) {
         throw new Error('Wallet extension not found. Please install Leather or Hiro wallet.');
       }
 
+      console.log('Calling connectWallet()...');
       const response = await connectWallet();
-      // addresses is a flat array - find the Stacks address (starts with SP or ST)
-      const stxAddress = response?.addresses?.find((addr: any) =>
-        addr.address?.startsWith('SP') || addr.address?.startsWith('ST')
-      )?.address;
+
+      // Debug: Log the entire response structure
+      console.log('=== CONNECT RESPONSE ===');
+      console.log('Full response:', response);
+      console.log('response.addresses type:', Array.isArray(response?.addresses) ? 'Array' : typeof response?.addresses);
+      console.log('response.addresses:', response?.addresses);
+
+      // Try to handle both possible structures
+      let stxAddress: string | undefined;
+
+      // Check if addresses is a flat array
+      if (Array.isArray(response?.addresses)) {
+        console.log('Addresses is an array, searching for STX address...');
+        stxAddress = response.addresses.find((addr: any) =>
+          addr.address?.startsWith('SP') || addr.address?.startsWith('ST')
+        )?.address;
+        console.log('Found STX address (array):', stxAddress);
+      }
+      // Check if addresses has stx property (object structure)
+      else if (response?.addresses?.stx) {
+        console.log('Addresses has stx property, getting first STX address...');
+        stxAddress = response.addresses.stx[0]?.address;
+        console.log('Found STX address (object):', stxAddress);
+      }
 
       if (stxAddress) {
+        console.log('✅ Successfully got address:', stxAddress);
         setUserAddress(stxAddress);
         setIsConnected(true);
+      } else {
+        console.error('❌ Could not extract STX address from response');
+        throw new Error('Could not extract Stacks address from wallet response');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
-      setError(errorMessage);
       console.error('Wallet connection error:', err);
+
+      // Handle specific error cases with helpful messages
+      let errorMessage = 'Failed to connect wallet';
+
+      if (err instanceof Error) {
+        const errMsg = err.message.toLowerCase();
+
+        // Xverse: No account created yet
+        if (errMsg.includes('failed to get selected account') ||
+            errMsg.includes('no account') ||
+            errMsg.includes('account not found')) {
+          errorMessage = 'Please create or import an account in your Xverse wallet first, then try connecting again.';
+        }
+        // Wallet locked
+        else if (errMsg.includes('locked') || errMsg.includes('unlock')) {
+          errorMessage = 'Please unlock your wallet extension and try again.';
+        }
+        // User rejected the connection
+        else if (errMsg.includes('user rejected') ||
+                 errMsg.includes('user denied') ||
+                 errMsg.includes('user cancelled')) {
+          errorMessage = 'Connection cancelled. Click "Connect Wallet" to try again.';
+        }
+        // Generic error - show original message
+        else {
+          errorMessage = err.message;
+        }
+      }
+
+      setError(errorMessage);
     } finally {
       setIsConnecting(false);
     }
